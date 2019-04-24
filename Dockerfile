@@ -1,10 +1,9 @@
-FROM maven:3-jdk-8-alpine
+FROM maven:3.6 AS build  
+COPY . /home  
+WORKDIR /home
+RUN mvn clean install -DskipTests
 
-COPY . /data/springboot-helloworld
-WORKDIR /data/springboot-helloworld
-
-RUN ["mvn", "clean", "install"]
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "target/helloworld-0.0.1-SNAPSHOT.jar"]
+FROM openjdk:8 
+COPY --from=build /home/target/*.jar /tolga.jar  
+EXPOSE 8080  
+CMD ["java","-jar","/tolga.jar"] 
